@@ -1,0 +1,116 @@
+
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname R4
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+ip cef
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+! 
+!
+crypto isakmp policy 1
+ encr aes
+ authentication pre-share
+ group 2
+ lifetime 60
+crypto isakmp key cisco address 101.1.1.10
+!
+!
+crypto ipsec transform-set t-set esp-aes esp-sha-hmac 
+!
+crypto map cmap 10 ipsec-isakmp 
+ set peer 101.1.1.10
+ set transform-set t-set 
+ match address 101
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 102.1.1.10 255.255.255.0
+ ip nat outside
+ ip virtual-reassembly
+ duplex auto
+ speed auto
+ crypto map cmap
+!
+interface FastEthernet0/1
+ ip address 192.168.1.10 255.255.255.0
+ ip nat inside
+ ip virtual-reassembly
+ duplex auto
+ speed auto
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 102.1.1.1
+!
+!
+ip http server
+no ip http secure-server
+ip nat inside source static 192.168.1.1 192.168.4.1
+!
+access-list 101 permit ip host 192.168.4.1 host 192.168.3.1
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+line aux 0
+line vty 0 4
+!
+!
+end
